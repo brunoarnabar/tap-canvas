@@ -13,8 +13,11 @@ from tap_canvas.streams import (
     UsersStream,
     SectionsStream,
     AssignmentsStream
-
 )
+
+# Import version from __init__.py
+from tap_canvas import __version__
+
 STREAM_TYPES = [
     EnrollmentTermStream,
     CourseStream,
@@ -26,11 +29,14 @@ STREAM_TYPES = [
 ]
 
 
-class Tapcanvas(Tap):
-    """canvas tap class."""
+class TapCanvas(Tap):  # Changed from Tapcanvas to TapCanvas
+    """Canvas tap class."""
+    
     name = "tap-canvas"
-
-    # This might be when the #auth type is called. Maybe add oauth here? With a refresh token. Like tap-pardot 
+    
+    # Add version information
+    __version__ = __version__
+    
     config_jsonschema = th.PropertiesList(
         th.Property(
             "api_key",
@@ -42,9 +48,17 @@ class Tapcanvas(Tap):
             "course_ends_after",
             th.DateTimeType,
             description="Limit courses queried to courses that end after this date."
+        ),
+        th.Property(
+            "base_url",
+            th.StringType,
+            required=True,
+            description="The base URL for the Canvas API (e.g., https://canvas.instructure.com/api/v1)"
         )
     ).to_dict()
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
         return [stream_class(tap=self) for stream_class in STREAM_TYPES]
+
+Tapcanvas = TapCanvas

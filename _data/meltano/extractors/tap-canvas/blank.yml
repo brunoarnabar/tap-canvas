@@ -1,0 +1,61 @@
+capabilities:
+- about
+- activate-version
+- batch
+- catalog
+- discover
+- schema-flattening
+- state
+- stream-maps
+description: >
+  Singer-SDK powered variant of tap-canvas that extracts data from Canvas LMS.
+  Published by @brunoarnabar.
+domain_url: https://canvas.instructure.com
+executable: tap-canvas
+is_meltano_sdk: true
+keywords:
+- meltano_sdk
+label: Tap Canvas (blank variant)
+logo_url: /assets/logos/extractor/tap-canvas.png
+maintenance_status: active
+namespace: tap_canvas_blank
+next_steps: ""
+pip_url: tap-canvas-blank==0.0.5
+quality: silver
+repo: https://github.com/brunoarnabar/tap-canvas.git
+settings:
+- description: Canvas API key used for authenticated requests.
+  kind: password
+  label: API Key
+  name: api_key
+  required: true
+  secret: true
+- description: Base URL for your Canvas instance, e.g. 
+    https://canvas.instructure.com/api/v1
+  kind: string
+  label: API Base URL
+  name: base_url
+  required: true
+- kind: object
+  name: batch_config
+- description: Only include courses ending after this ISO-8601 date (optional).
+  kind: string
+  label: Course Ends After
+  name: course_ends_after
+- kind: object
+  name: faker_config
+- kind: boolean
+  name: flattening_enabled
+- kind: integer
+  name: flattening_max_depth
+- kind: object
+  name: stream_map_config
+- kind: object
+  name: stream_maps
+settings_group_validation:
+- - api_key
+  - base_url
+settings_preamble: ""
+usage: ""
+variant: blank
+﻿name: tap-canvas

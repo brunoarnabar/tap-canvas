@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "tap-canvas"
-version = "0.0.1"
+name = "tap-canvas-blank"
+version = "0.0.5"
 description = "Singer tap for Canvas, built with the Meltano SDK for Singer Taps."
 authors = ["Bruno Arnabar"]
 keywords = ["ELT","canvas"]
@@ -26,4 +26,4 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-tap-canvas = "tap_canvas.cli:cli"
+tap-canvas = "tap_canvas_blank.cli:cli"

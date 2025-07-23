@@ -4,7 +4,7 @@ import datetime
 
 from singer_sdk.testing import get_standard_tap_tests
 
-from tap_canvas.tap import Tapcanvas
+from tap_canvas_blank.tap import Tapcanvas
 import os
 
 SAMPLE_CONFIG = {

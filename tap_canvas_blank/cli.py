@@ -1,6 +1,6 @@
 """CLI for tap-canvas."""
 
-from tap_canvas.tap import TapCanvas
+from tap_canvas_blank.tap import TapCanvas
 
 def cli():
     """Run the tap CLI."""

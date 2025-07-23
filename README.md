@@ -111,3 +111,12 @@ In a python enviorment
 to create the dist
 - run
   - twine upload dist/*
+
+For the package:
+- run
+  - rm -rf dist
+    - or Remove-Item -Recurse -Force dist
+  - poetry version patch
+  - poetry build
+  - poetry run twine upload dist/*
+

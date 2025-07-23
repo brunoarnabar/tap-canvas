@@ -6,8 +6,8 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 
 from singer_sdk import typing as th  # JSON Schema typing helpers
 
-from tap_canvas.client import CanvasStream
-from tap_canvas.typing import IntegerTypeCustom
+from tap_canvas_blank.client import CanvasStream
+from tap_canvas_blank.typing import IntegerTypeCustom
 import requests
 
 class EnrollmentTermStream(CanvasStream):

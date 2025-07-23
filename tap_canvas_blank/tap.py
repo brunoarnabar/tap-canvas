@@ -5,7 +5,7 @@ from typing import List
 from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-from tap_canvas.streams import (
+from tap_canvas_blank.streams import (
     EnrollmentTermStream,
     CourseStream,
     OutcomeResultStream,
@@ -16,7 +16,7 @@ from tap_canvas.streams import (
 )
 
 # Import version from __init__.py
-from tap_canvas import __version__
+from tap_canvas_blank import __version__
 
 STREAM_TYPES = [
     EnrollmentTermStream,

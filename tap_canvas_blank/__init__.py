@@ -1,6 +1,6 @@
 from importlib.metadata import version, PackageNotFoundError
 
 try:
-    __version__ = version("tap-canvas")
+    __version__ = version("tap-canvas-blank")
 except PackageNotFoundError:
-    __version__ = "0.0.4"
+    __version__ = "0.0.0"

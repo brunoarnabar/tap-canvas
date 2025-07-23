@@ -1,0 +1,24 @@
+name: tap-canvas.git
+variant: brunoarnabar
+label: Canvas.Git
+logo_url: /assets/logos/extractors/canvas.git.png
+capabilities:
+- catalog
+- discover
+- state
+description: ''
+domain_url: ''
+keywords:
+- meltano_sdk
+maintenance_status: active
+namespace: tap_canvas.git
+next_steps: ''
+pip_url: git+https://github.com/brunoarnabar/tap-canvas.git.git
+quality: unknown
+repo: https://github.com/brunoarnabar/tap-canvas.git
+settings: []
+settings_group_validation:
+- []
+settings_preamble: ''
+usage: ''
+executable: tap-canvas.git

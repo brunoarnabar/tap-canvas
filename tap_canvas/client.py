@@ -18,7 +18,10 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class CanvasStream(RESTStream):
     """canvas stream class."""
 
-    url_base = "https://dtechhs.instructure.com/api/v1"
+    @property
+    def url_base(self) -> str:
+        """Return the base URL for the Canvas API."""
+        return self.config["base_url"]
 
     records_jsonpath = "$[*]"  # Or override `parse_response`.
     next_page_token_jsonpath = "$.next_page"  # Or override `get_next_page_token`.

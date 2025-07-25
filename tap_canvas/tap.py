@@ -5,7 +5,7 @@ from typing import List
 from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-from tap_canvas_blank.streams import (
+from tap_canvas.streams import (
     EnrollmentTermStream,
     CourseStream,
     OutcomeResultStream,
@@ -16,7 +16,7 @@ from tap_canvas_blank.streams import (
 )
 
 # Import version from __init__.py
-from tap_canvas_blank import __version__
+from tap_canvas import __version__
 
 STREAM_TYPES = [
     EnrollmentTermStream,
@@ -34,9 +34,10 @@ class TapCanvas(Tap):  # Changed from Tapcanvas to TapCanvas
     
     name = "tap-canvas"
     
-    # Add version information
     __version__ = __version__
-    
+
+    capabilities = ["about", "catalog", "state", "discover", "activate-version", "stream-maps", "schema-flattening", "batch"]
+
     config_jsonschema = th.PropertiesList(
         th.Property(
             "api_key",

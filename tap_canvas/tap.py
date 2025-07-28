@@ -33,6 +33,8 @@ class TapCanvas(Tap):  # Changed from Tapcanvas to TapCanvas
     """Canvas tap class."""
     
     name = "tap-canvas"
+
+    disable_default_logging_config_file = True
     
     __version__ = __version__
 

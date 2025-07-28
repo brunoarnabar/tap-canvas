@@ -6,6 +6,8 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 
 from singer_sdk import typing as th  # JSON Schema typing helpers
 
+from singer_sdk.typing import (ObjectType)
+
 from tap_canvas.client import CanvasStream
 from tap_canvas.typing import IntegerTypeCustom
 import requests
@@ -272,7 +274,7 @@ class AssignmentsStream(CanvasStream):
         th.Property("updated_at", th.DateTimeType),
         th.Property("course_id", IntegerTypeCustom),
         th.Property("name", th.StringType),
-        th.Property("rubric", th.StringType),
+        th.Property("rubric", th.ArrayType(ObjectType)),
         th.Property("published", th.BooleanType)
     ).to_dict()
 

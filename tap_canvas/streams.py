@@ -200,7 +200,7 @@ class EnrollmentsStream(CanvasStream):
         th.Property("sis_import_id", IntegerTypeCustom, description="Placehold"),
         th.Property("sis_account_id", th.StringType, description="Placehold"),
         th.Property("sis_course_id", th.StringType, description="Placehold"),
-        th.Property("sis_section_id", IntegerTypeCustom, description="Placehold"),
+        th.Property("sis_section_id", th.StringType, description="Placehold"),
         th.Property("sis_user_id", th.StringType, description="Placehold"),
         th.Property("html_url", th.StringType, description="Placehold"),
     ).to_dict()

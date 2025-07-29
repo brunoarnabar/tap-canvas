@@ -107,7 +107,7 @@ class OutcomeResultStream(CanvasStream):
         th.Property("submitted_or_assessed_at", th.DateTimeType),
         th.Property("links", th.ObjectType(
             th.Property("user", th.StringType),
-            th.Property("learning_outcome", IntegerTypeCustom),
+            th.Property("learning_outcome", th.StringType),
             th.Property("assignment", th.StringType),
             th.Property("alignment", th.StringType)
         )),

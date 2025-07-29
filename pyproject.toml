@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tap-canvas"
-version = "0.0.5"
+version = "0.0.6"
 description = "Singer tap for Canvas, built with the Meltano SDK for Singer Taps."
 authors = ["Bruno Arnabar"]
 keywords = ["ELT","canvas"]

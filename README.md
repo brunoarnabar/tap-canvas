@@ -120,3 +120,20 @@ For the package:
   - poetry build
   - poetry run twine upload dist/*
 
+you should also run
+  - poetry install
+to install the package in the current environment.
+
+Then run 
+- pip install -e .
+to install the package in editable mode.
+---
+
+to push up to gitlab and github:
+- using source control in vscode
+  - add the files
+  - commit the files
+  - push the files
+- in the terminal
+  - git push github HEAD:main
+

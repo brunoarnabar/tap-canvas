@@ -224,7 +224,7 @@ class SectionsStream(CanvasStream):
         th.Property("end_at", th.DateTimeType),
         th.Property("created_at", th.DateTimeType),
         th.Property("restrict_enrollments_to_section_dates", th.BooleanType),
-        th.Property("sis_section_id", IntegerTypeCustom),
+        th.Property("sis_section_id", th.StringType),
         th.Property("sis_course_id", th.StringType),
         th.Property("sis_import_id", IntegerTypeCustom),
     ).to_dict()

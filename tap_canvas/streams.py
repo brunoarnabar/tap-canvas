@@ -119,7 +119,7 @@ class OutcomeResultStream(CanvasStream):
         th.Property("alignment_id", th.StringType),
         th.Property("alignment_name", th.StringType),
         th.Property("course_id", IntegerTypeCustom),
-        th.Property("user_id", IntegerTypeCustom)
+        th.Property("user_id", th.StringType)
     ).to_dict()
 
     def get_url_params(

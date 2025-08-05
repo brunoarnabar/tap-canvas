@@ -184,7 +184,7 @@ class EnrollmentsStream(CanvasStream):
     schema = th.PropertiesList(
         th.Property("course_id", IntegerTypeCustom, description="Placehold"),
         th.Property("id", IntegerTypeCustom, description="Placehold"),
-        th.Property("user_id", th.StringType, description="Placehold"),
+        th.Property("user_id", th.IntegerTypeCustom, description="Placehold"),
         th.Property("course_section_id", IntegerTypeCustom, description="Placehold"),
         th.Property("root_account_id", IntegerTypeCustom, description="Placehold"),
         th.Property("type", th.StringType, description="Placehold"),

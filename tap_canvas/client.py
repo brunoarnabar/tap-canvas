@@ -18,6 +18,12 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class CanvasStream(RESTStream):
     """canvas stream class."""
 
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize stream with record limit tracking."""
+        super().__init__(*args, **kwargs)
+        self._record_limit = self.config.get("record_limit")
+        self._records_count = 0
+
     @property
     def url_base(self) -> str:
         """Return the base URL for the Canvas API."""
@@ -30,8 +36,7 @@ class CanvasStream(RESTStream):
     def authenticator(self) -> BearerTokenAuthenticator:
         """Return a new authenticator object."""
         return BearerTokenAuthenticator.create_for_stream(
-            self,
-            token=self.config.get("api_key")
+            self, token=self.config.get("api_key")
         )
 
     @property
@@ -46,6 +51,9 @@ class CanvasStream(RESTStream):
         self, response: requests.Response, previous_token: Optional[Any]
     ) -> Optional[Any]:
         """Return a token for identifying next page or None if no more pages."""
+        if self._record_limit is not None and self._records_count >= self._record_limit:
+            return None
+
         next_page_dict = response.links.get("next", None)
         if next_page_dict:
             next_page = next_page_dict["url"]
@@ -69,7 +77,13 @@ class CanvasStream(RESTStream):
         params["per_page"] = 100
         return params
 
-
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
-        yield from extract_jsonpath(self.records_jsonpath, input=response.json())
+        for row in extract_jsonpath(self.records_jsonpath, input=response.json()):
+            if (
+                self._record_limit is not None
+                and self._records_count >= self._record_limit
+            ):
+                break
+            self._records_count += 1
+            yield row

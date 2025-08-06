@@ -18,6 +18,8 @@ pipx install tap-canvas
 
 - [ ] `Developer TODO:` Provide a list of config options accepted by the tap.
 
+- `record_limit`: Optional. Maximum number of records to return per stream when syncing.
+
 A full list of supported settings and capabilities for this
 tap is available by running:
 

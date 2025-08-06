@@ -12,7 +12,7 @@ from tap_canvas.streams import (
     EnrollmentsStream,
     UsersStream,
     SectionsStream,
-    AssignmentsStream
+    AssignmentsStream,
 )
 
 # Import version from __init__.py
@@ -25,43 +25,58 @@ STREAM_TYPES = [
     EnrollmentsStream,
     UsersStream,
     SectionsStream,
-    AssignmentsStream
+    AssignmentsStream,
 ]
 
 
 class TapCanvas(Tap):  # Changed from Tapcanvas to TapCanvas
     """Canvas tap class."""
-    
+
     name = "tap-canvas"
 
     disable_default_logging_config_file = True
-    
+
     __version__ = __version__
 
-    capabilities = ["about", "catalog", "state", "discover", "activate-version", "stream-maps", "schema-flattening", "batch"]
+    capabilities = [
+        "about",
+        "catalog",
+        "state",
+        "discover",
+        "activate-version",
+        "stream-maps",
+        "schema-flattening",
+        "batch",
+    ]
 
     config_jsonschema = th.PropertiesList(
         th.Property(
             "api_key",
             th.StringType,
             required=True,
-            description="The token to authenticate against the API service"
+            description="The token to authenticate against the API service",
         ),
         th.Property(
             "course_ends_after",
             th.DateTimeType,
-            description="Limit courses queried to courses that end after this date."
+            description="Limit courses queried to courses that end after this date.",
         ),
         th.Property(
             "base_url",
             th.StringType,
             required=True,
-            description="The base URL for the Canvas API (e.g., https://canvas.instructure.com/api/v1)"
-        )
+            description="The base URL for the Canvas API (e.g., https://canvas.instructure.com/api/v1)",
+        ),
+        th.Property(
+            "record_limit",
+            th.IntegerType,
+            description="Maximum number of records to return per stream",
+        ),
     ).to_dict()
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
         return [stream_class(tap=self) for stream_class in STREAM_TYPES]
+
 
 Tapcanvas = TapCanvas

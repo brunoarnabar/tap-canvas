@@ -32,14 +32,13 @@ class EnrollmentTermStream(CanvasStream):
 
 
 class CourseStream(CanvasStream):
-    records_jsonpath = "$[*]"
     name = "courses"
     primary_keys = ["id"]
-    replication_key = None
+    replication_key = "updated_at"
+    records_jsonpath = "$[*]"
 
     @property
     def path(self) -> str:
-        """Return the API path for this stream, using configurable account ID."""
         account_id = self.config.get("account_id", "1")
         return f"/accounts/{account_id}/courses"
 
@@ -63,6 +62,7 @@ class CourseStream(CanvasStream):
         th.Property("template", th.BooleanType),
         th.Property("sis_course_id", th.StringType),
         th.Property("sis_import_id", IntegerTypeCustom),
+        th.Property("updated_at", th.DateTimeType),  # Required for incremental sync
     ).to_dict()
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
@@ -72,20 +72,23 @@ class CourseStream(CanvasStream):
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
         params: dict = {}
+
         if next_page_token:
             params["page"] = next_page_token
-        if self.replication_key:
-            params["sort"] = "asc"
-            params["order_by"] = self.replication_key
+
         params["per_page"] = 100
+
+        # Add updated_since for incremental syncs
+        if self.replication_key and context and context.get("start_date"):
+            params["updated_since"] = context["start_date"]
 
         if "course_ends_after" in self.config:
             params["ends_after"] = self.config.get("course_ends_after")
+
         if "with_enrollments" in self.config:
             params["with_enrollments"] = self.config.get("with_enrollments")
 
         return params
-
 
 class OutcomeResultStream(CanvasStream):
     records_jsonpath = "$"

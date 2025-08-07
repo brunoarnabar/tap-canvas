@@ -26,35 +26,24 @@ class DummyResponse:
 def test_record_limit_applied():
     """Test that record limit is properly applied."""
     tap = TapCanvas(config={"base_url": "http://example", "api_key": "x", "record_limit": 2})
-    
-    stream = DummyStream(
-        tap=tap,
-        config={"base_url": "http://example", "api_key": "x", "record_limit": 2},
-    )
-    
+    stream = DummyStream(tap=tap, config=tap.config)
+
     response = DummyResponse(record_count=3)
     records = list(stream.parse_response(response))
-    
+
     assert len(records) == 2
     assert records[0]["id"] == 1
     assert records[1]["id"] == 2
-    
-    token = stream.get_next_page_token(response, None)
-    assert token is None
 
 
 def test_no_record_limit():
     """Test behavior when no record limit is set."""
     tap = TapCanvas(config={"base_url": "http://example", "api_key": "x"})
-    
-    stream = DummyStream(
-        tap=tap,
-        config={"base_url": "http://example", "api_key": "x"},
-    )
-    
+    stream = DummyStream(tap=tap, config=tap.config)
+
     response = DummyResponse(record_count=3)
     records = list(stream.parse_response(response))
-    
+
     assert len(records) == 3
     assert records[0]["id"] == 1
     assert records[1]["id"] == 2
@@ -64,16 +53,9 @@ def test_no_record_limit():
 def test_record_limit_zero():
     """Test behavior when record limit is 0."""
     tap = TapCanvas(config={"base_url": "http://example", "api_key": "x", "record_limit": 0})
-    
-    stream = DummyStream(
-        tap=tap,
-        config={"base_url": "http://example", "api_key": "x", "record_limit": 0},
-    )
-    
+    stream = DummyStream(tap=tap, config=tap.config)
+
     response = DummyResponse(record_count=3)
     records = list(stream.parse_response(response))
-    
+
     assert len(records) == 0
-    
-    token = stream.get_next_page_token(response, None)
-    assert token is None

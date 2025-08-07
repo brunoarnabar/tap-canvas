@@ -6,24 +6,50 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Union, List, Iterable
 
 from memoization import cached
-
 from singer_sdk.helpers.jsonpath import extract_jsonpath
+from singer_sdk.pagination import BaseAPIPaginator
 from singer_sdk.streams import RESTStream
 from singer_sdk.authenticators import BearerTokenAuthenticator
-
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
 
+class CanvasPaginator(BaseAPIPaginator):
+    """Paginator for Canvas API using link headers."""
+
+    def __init__(self, record_limit: Optional[int] = None):
+        # Canvas API pagination starts at page 1
+        super().__init__(start_value=1)
+        self.record_limit = record_limit
+        self.record_count = 0
+
+    def get_next(self, response: requests.Response) -> Optional[str]:
+        # Update record count based on the current response
+        if hasattr(response, 'json'):
+            try:
+                current_records = len(response.json())
+                self.record_count += current_records
+            except:
+                pass
+
+        if self.record_limit is not None and self.record_count >= self.record_limit:
+            return None
+
+        next_link = response.links.get("next", {}).get("url")
+        if next_link:
+            query = dict(parse.parse_qsl(parse.urlsplit(next_link).query))
+            next_page_token = query.get("page")
+            return next_page_token
+        return None
+
+
 class CanvasStream(RESTStream):
-    """canvas stream class."""
+    """Canvas stream class."""
 
     def __init__(self, tap=None, name=None, schema=None, path=None, **kwargs):
         """Initialize stream with record limit tracking."""
-        self._direct_config = kwargs.pop('config', None)
-        
+        self._direct_config = kwargs.pop("config", None)
         super().__init__(tap=tap, name=name, schema=schema, path=path, **kwargs)
-        
         self._record_limit = self.config.get("record_limit")
         self._records_count = 0
 
@@ -32,15 +58,14 @@ class CanvasStream(RESTStream):
         """Get configuration, preferring direct config for testing."""
         if self._direct_config is not None:
             return self._direct_config
-        return super().config if hasattr(super(), 'config') else self._tap.config
+        return super().config if hasattr(super(), "config") else self._tap.config
 
     @property
     def url_base(self) -> str:
         """Return the base URL for the Canvas API."""
         return self.config["base_url"]
 
-    records_jsonpath = "$[*]"  
-    next_page_token_jsonpath = "$.next_page"  
+    records_jsonpath = "$[*]"
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
@@ -54,25 +79,12 @@ class CanvasStream(RESTStream):
         """Return the http headers needed."""
         headers = {}
         if "user_agent" in self.config:
-            headers["User-Agent"] = self.config.get("user_agent")
+            headers["User-Agent"] = self.config["user_agent"]
         return headers
 
-    def get_next_page_token(
-        self, response: requests.Response, previous_token: Optional[Any]
-    ) -> Optional[Any]:
-        """Return a token for identifying next page or None if no more pages."""
-        if self._record_limit is not None and self._records_count >= self._record_limit:
-            return None
-
-        next_page_dict = response.links.get("next", None)
-        if next_page_dict:
-            next_page = next_page_dict["url"]
-            query = dict(parse.parse_qsl(parse.urlsplit(next_page).query))
-            next_page_token = query["page"]
-        else:
-            next_page_token = None
-
-        return next_page_token
+    def get_new_paginator(self) -> BaseAPIPaginator:
+        """Return a paginator instance for this stream."""
+        return CanvasPaginator(record_limit=self._record_limit)
 
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]

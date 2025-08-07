@@ -25,6 +25,21 @@ def tap(config):
 def streams(tap):
     return {stream.name: stream for stream in tap.discover_streams()}
 
+@pytest.fixture
+def sample_course_context(streams):
+    """Get a sample course context for child stream testing."""
+    if "courses" not in streams:
+        return None
+    
+    courses_stream = streams["courses"]
+    try:
+        # Get the first course record
+        for course_record in courses_stream.get_records(context=None):
+            return courses_stream.get_child_context(course_record, None)
+    except Exception:
+        return None
+    return None
+
 class TestStreamFeatures:
     def test_all_streams_discovered(self, streams):
         expected_streams = [
@@ -66,14 +81,14 @@ class TestStreamFeatures:
                 pytest.fail(f"Stream {stream_name} failed to generate URL: {e}")
 
     @pytest.mark.parametrize("stream_name", [
-        "terms", "courses", "users", "enrollments", "sections", "assignments"
+        "terms", "courses", "users"
     ])
-    def test_individual_stream_data_retrieval(self, streams, stream_name):
+    def test_individual_stream_data_retrieval_standalone(self, streams, stream_name):
+        """Test streams that don't require context."""
         if stream_name not in streams:
             pytest.skip(f"Stream {stream_name} not available")
+        
         stream = streams[stream_name]
-        if hasattr(stream, 'parent_stream_type') and stream.parent_stream_type:
-            pytest.skip(f"Stream {stream_name} requires context and is tested separately")
         try:
             records = []
             record_count = 0
@@ -91,6 +106,37 @@ class TestStreamFeatures:
             assert len(records) <= 5
         except Exception as e:
             pytest.fail(f"Stream {stream_name} failed to retrieve data: {e}")
+
+    @pytest.mark.parametrize("stream_name", [
+        "enrollments", "sections", "assignments", "outcome_results"
+    ])
+    def test_individual_stream_data_retrieval_with_context(self, streams, stream_name, sample_course_context):
+        """Test streams that require context (child streams)."""
+        if stream_name not in streams:
+            pytest.skip(f"Stream {stream_name} not available")
+        
+        if sample_course_context is None:
+            pytest.skip(f"No course context available for testing {stream_name}")
+        
+        stream = streams[stream_name]
+        try:
+            records = []
+            record_count = 0
+            for record in stream.get_records(context=sample_course_context):
+                records.append(record)
+                record_count += 1
+                if record_count == 1:
+                    assert isinstance(record, dict)
+                    assert len(record) > 0
+                    if "id" in stream.primary_keys:
+                        assert "id" in record
+                        assert record["id"] is not None
+                if record_count >= 3:
+                    break
+            # Note: Child streams may have 0 records for a given course, which is valid
+            print(f"Stream {stream_name}: Retrieved {len(records)} records with course context")
+        except Exception as e:
+            pytest.fail(f"Stream {stream_name} failed to retrieve data with context: {e}")
 
     @pytest.mark.parametrize("parent_stream_name,child_stream_names", [
         ("courses", ["enrollments", "sections", "assignments", "outcome_results"])

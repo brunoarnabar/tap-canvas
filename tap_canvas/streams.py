@@ -59,7 +59,7 @@ class CourseStream(CanvasStream):
         th.Property("blueprint", th.BooleanType),
         th.Property("template", th.BooleanType),
         th.Property("sis_course_id", th.StringType),
-        th.Property("sis_import_id", IntegerTypeCustom)    
+        th.Property("sis_import_id", IntegerTypeCustom)
     ).to_dict()
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
@@ -278,6 +278,6 @@ class AssignmentsStream(CanvasStream):
     ).to_dict()
 
 class OutcomeStream(CanvasStream):
-    records_path = "$[*]"
+    records_jsonpath = "$[*]"
 
     name = "outcomes"

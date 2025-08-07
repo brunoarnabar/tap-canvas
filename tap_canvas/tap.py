@@ -2,7 +2,7 @@
 
 from typing import List
 
-from singer_sdk import Tap, Stream, Capabilities
+from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
 
 from tap_canvas.streams import (

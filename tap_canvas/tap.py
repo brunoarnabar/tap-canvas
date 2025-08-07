@@ -81,8 +81,5 @@ class TapCanvas(Tap):
 
 
     def discover_streams(self) -> List[Stream]:
-        """Return a list of discovered streams with stream maps applied."""
-        return [
-            self.apply_stream_map(stream)
-            for stream in [stream_class(tap=self) for stream_class in STREAM_TYPES]
-        ]
+        """Return a list of discovered streams."""
+        return [stream_class(tap=self) for stream_class in STREAM_TYPES]

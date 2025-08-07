@@ -30,11 +30,9 @@ class EnrollmentTermStream(CanvasStream):
         th.Property("sis_import_id", th.StringType, description="Placeholder"),
     ).to_dict()
 
-
 class CourseStream(CanvasStream):
     name = "courses"
     primary_keys = ["id"]
-    replication_key = "updated_at"
     records_jsonpath = "$[*]"
 
     @property
@@ -61,8 +59,7 @@ class CourseStream(CanvasStream):
         th.Property("blueprint", th.BooleanType),
         th.Property("template", th.BooleanType),
         th.Property("sis_course_id", th.StringType),
-        th.Property("sis_import_id", IntegerTypeCustom),
-        th.Property("updated_at", th.DateTimeType),  # Required for incremental sync
+        th.Property("sis_import_id", IntegerTypeCustom)    
     ).to_dict()
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
@@ -78,9 +75,7 @@ class CourseStream(CanvasStream):
 
         params["per_page"] = 100
 
-        # Add updated_since for incremental syncs
-        if self.replication_key and context and context.get("start_date"):
-            params["updated_since"] = context["start_date"]
+        # No updated_since since this stream is not incremental
 
         if "course_ends_after" in self.config:
             params["ends_after"] = self.config.get("course_ends_after")
@@ -88,7 +83,7 @@ class CourseStream(CanvasStream):
         if "with_enrollments" in self.config:
             params["with_enrollments"] = self.config.get("with_enrollments")
 
-        # Add include fields from config - THIS IS THE FIX!
+        # Optional: include additional fields
         include_fields = self.config.get("include")
         if include_fields:
             params["include"] = include_fields

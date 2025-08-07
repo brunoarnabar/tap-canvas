@@ -39,10 +39,8 @@ class TapCanvas(Tap):
     __version__ = __version__
 
     capabilities = [
-        Capabilities.DISCOVER,
-        Capabilities.CATALOG,
-        Capabilities.STATE,
-        Capabilities.STREAM_MAPS,  
+        "catalog",
+        "discover" 
     ]
 
     config_jsonschema = th.PropertiesList(

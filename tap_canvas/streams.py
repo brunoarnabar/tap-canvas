@@ -88,6 +88,11 @@ class CourseStream(CanvasStream):
         if "with_enrollments" in self.config:
             params["with_enrollments"] = self.config.get("with_enrollments")
 
+        # Add include fields from config - THIS IS THE FIX!
+        include_fields = self.config.get("include")
+        if include_fields:
+            params["include"] = include_fields
+
         return params
 
 class OutcomeResultStream(CanvasStream):

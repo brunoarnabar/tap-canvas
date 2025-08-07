@@ -48,17 +48,21 @@ class CanvasStream(RESTStream):
 
     def __init__(self, tap=None, name=None, schema=None, path=None, **kwargs):
         """Initialize stream with record limit tracking."""
+        # Handle the config parameter that some tests use
         self._direct_config = kwargs.pop("config", None)
         super().__init__(tap=tap, name=name, schema=schema, path=path, **kwargs)
+        # Access record_limit after super().__init__ when config is properly set up
         self._record_limit = self.config.get("record_limit")
         self._records_count = 0
 
     @property
     def config(self) -> dict:
-        """Get configuration, preferring direct config for testing."""
+        """Get configuration, handling both direct config and tap config."""
+        # If direct config was provided (for testing), use it
         if self._direct_config is not None:
             return self._direct_config
-        return super().config if hasattr(super(), "config") else self._tap.config
+        # Otherwise use the standard Singer SDK config access
+        return super().config
 
     @property
     def url_base(self) -> str:
@@ -89,14 +93,31 @@ class CanvasStream(RESTStream):
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
-        """Return a dictionary of values to be used in URL parameterization."""
+        """Get URL query parameters."""
         params: dict = {}
+        
+        # Add pagination
         if next_page_token:
             params["page"] = next_page_token
+        
+        # Add sorting for incremental streams
         if self.replication_key:
             params["sort"] = "asc"
             params["order_by"] = self.replication_key
+        
+        # Add updated_since for incremental streams
+        if context and self.replication_key == "updated_at":
+            if start := context.get("start_date") or self.config.get("start_date"):
+                params["updated_since"] = start
+
+        # Add include fields from config
+        include_fields = self.config.get("include")
+        if include_fields:
+            params["include"] = include_fields
+
+        # Add per_page parameter
         params["per_page"] = 100
+        
         return params
 
     def parse_response(self, response: requests.Response) -> Iterable[dict]:

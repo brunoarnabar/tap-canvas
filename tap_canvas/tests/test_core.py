@@ -8,6 +8,7 @@ from tap_canvas.tap import TapCanvas
 SAMPLE_CONFIG = {
     "api_key": "test_key",
     "base_url": "https://test.canvas.instructure.com/api/v1",
+    "account_id": "123"
 }
 
 

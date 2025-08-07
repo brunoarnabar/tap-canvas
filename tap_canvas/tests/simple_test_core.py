@@ -6,6 +6,7 @@ from tap_canvas.tap import TapCanvas
 SAMPLE_CONFIG = {
     "api_key": "test_key",
     "base_url": "https://test.canvas.instructure.com/api/v1",
+    "account_id": "123"
 }
 
 
@@ -51,3 +52,4 @@ def test_config_schema():
     properties = schema["properties"]
     assert "api_key" in properties, "Should have api_key property"
     assert "base_url" in properties, "Should have base_url property"
+    assert "account_id" in properties, "Should have account_id property"

@@ -33,44 +33,44 @@ class EnrollmentTermStream(CanvasStream):
 
 class CourseStream(CanvasStream):
     records_jsonpath = "$[*]"
-
     name = "courses"
-    path = "/accounts/1/courses"  # TODO: add account id to the config
     primary_keys = ["id"]
     replication_key = None
+
+    @property
+    def path(self) -> str:
+        """Return the API path for this stream, using configurable account ID."""
+        account_id = self.config.get("account_id", "1")
+        return f"/accounts/{account_id}/courses"
+
     schema = th.PropertiesList(
-        th.Property("root_account_id", IntegerTypeCustom, description="Placeholder"),
-        th.Property("id", IntegerTypeCustom, description="Placeholder"),
-        th.Property("account_id", IntegerTypeCustom, description="Placeholder"),
-        th.Property("name", th.StringType, description="Placeholder"),
-        th.Property("uuid", th.StringType, description="Placeholder"),
-        th.Property("start_at", th.DateTimeType, description="Placeholder"),
-        th.Property("created_at", th.DateTimeType, description="Placeholder"),
-        th.Property("course_code", th.StringType, description="Placeholder"),
-        th.Property("default_view", th.StringType, description="Placeholder"),
-        th.Property("enrollment_term_id", IntegerTypeCustom, description="Placeholder"),
-        th.Property("end_at", th.DateTimeType, description="Placeholder"),
-        th.Property("homeroom_course", th.BooleanType, description="Placeholder"),
-        th.Property("friendly_name", th.StringType, description="Placeholder"),
-        th.Property("apply_assignment_group_weights",
-                    th.BooleanType, description="Placeholder"),
-        th.Property("time_zone", th.StringType, description="Placeholder"),
-        th.Property("blueprint", th.BooleanType, description="Placeholder"),
-        th.Property("template", th.BooleanType, description="Placeholder"),
-        th.Property("sis_course_id", th.StringType, description="Placeholder"),
-        th.Property("sis_import_id", IntegerTypeCustom, description="Placeholder"),
+        th.Property("root_account_id", IntegerTypeCustom),
+        th.Property("id", IntegerTypeCustom),
+        th.Property("account_id", IntegerTypeCustom),
+        th.Property("name", th.StringType),
+        th.Property("uuid", th.StringType),
+        th.Property("start_at", th.DateTimeType),
+        th.Property("created_at", th.DateTimeType),
+        th.Property("course_code", th.StringType),
+        th.Property("default_view", th.StringType),
+        th.Property("enrollment_term_id", IntegerTypeCustom),
+        th.Property("end_at", th.DateTimeType),
+        th.Property("homeroom_course", th.BooleanType),
+        th.Property("friendly_name", th.StringType),
+        th.Property("apply_assignment_group_weights", th.BooleanType),
+        th.Property("time_zone", th.StringType),
+        th.Property("blueprint", th.BooleanType),
+        th.Property("template", th.BooleanType),
+        th.Property("sis_course_id", th.StringType),
+        th.Property("sis_import_id", IntegerTypeCustom),
     ).to_dict()
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
-        """Return a context dictionary for child streams."""
-        return {
-            "course_id": record["id"],
-        }
+        return {"course_id": record["id"]}
 
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
-        """Return a dictionary of values to be used in URL parameterization."""
         params: dict = {}
         if next_page_token:
             params["page"] = next_page_token

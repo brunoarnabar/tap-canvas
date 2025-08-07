@@ -47,15 +47,20 @@ class TapCanvas(Tap):
             description="The token to authenticate against the API service",
         ),
         th.Property(
+            "base_url",
+            th.StringType,
+            required=True,
+            description="The base URL for the Canvas API (e.g., https://canvas.instructure.com/api/v1)",
+        ),
+        th.Property(
             "course_ends_after",
             th.DateTimeType,
             description="Limit courses queried to courses that end after this date.",
         ),
         th.Property(
-            "base_url",
+            "account_id",
             th.StringType,
-            required=True,
-            description="The base URL for the Canvas API (e.g., https://canvas.instructure.com/api/v1)",
+            description="Canvas account ID to use when querying /accounts/{account_id}/courses. Default is 1.",
         ),
         th.Property(
             "record_limit",

@@ -11,6 +11,7 @@ def get_config_from_env():
         "api_key": os.getenv("TAP_CANVAS_API_KEY"),
         "base_url": os.getenv("TAP_CANVAS_BASE_URL"),
         "record_limit": int(os.getenv("TAP_CANVAS_RECORD_LIMIT", "0")) or None,
+        "account_id": os.getenv("TAP_CANVAS_ACCOUNT_ID", "1"),
     }
 
 

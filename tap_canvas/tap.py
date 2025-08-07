@@ -29,7 +29,7 @@ STREAM_TYPES = [
 ]
 
 
-class TapCanvas(Tap):  # Changed from Tapcanvas to TapCanvas
+class TapCanvas(Tap):
     """Canvas tap class."""
 
     name = "tap-canvas"
@@ -67,6 +67,3 @@ class TapCanvas(Tap):  # Changed from Tapcanvas to TapCanvas
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
         return [stream_class(tap=self) for stream_class in STREAM_TYPES]
-
-
-Tapcanvas = TapCanvas

@@ -18,19 +18,29 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class CanvasStream(RESTStream):
     """canvas stream class."""
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, tap=None, name=None, schema=None, path=None, **kwargs):
         """Initialize stream with record limit tracking."""
-        super().__init__(*args, **kwargs)
+        self._direct_config = kwargs.pop('config', None)
+        
+        super().__init__(tap=tap, name=name, schema=schema, path=path, **kwargs)
+        
         self._record_limit = self.config.get("record_limit")
         self._records_count = 0
+
+    @property
+    def config(self) -> dict:
+        """Get configuration, preferring direct config for testing."""
+        if self._direct_config is not None:
+            return self._direct_config
+        return super().config if hasattr(super(), 'config') else self._tap.config
 
     @property
     def url_base(self) -> str:
         """Return the base URL for the Canvas API."""
         return self.config["base_url"]
 
-    records_jsonpath = "$[*]"  # Or override `parse_response`.
-    next_page_token_jsonpath = "$.next_page"  # Or override `get_next_page_token`.
+    records_jsonpath = "$[*]"  
+    next_page_token_jsonpath = "$.next_page"  
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:

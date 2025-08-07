@@ -38,16 +38,6 @@ class TapCanvas(Tap):  # Changed from Tapcanvas to TapCanvas
 
     __version__ = __version__
 
-    capabilities = [
-        "about",
-        "catalog",
-        "state",
-        "discover",
-        "activate-version",
-        "stream-maps",
-        "schema-flattening",
-        "batch",
-    ]
 
     config_jsonschema = th.PropertiesList(
         th.Property(

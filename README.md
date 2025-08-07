@@ -130,6 +130,8 @@ Then run
 - pip install -e .
 to install the package in editable mode.
 ---
+ Remove-Item -Recurse -Force dist; poetry version patch; poetry build; poetry run twine upload dist/*; poetry install; pip install -e .
+---
 
 to push up to gitlab and github:
 - using source control in vscode

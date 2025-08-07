@@ -172,37 +172,35 @@ class OutcomeResultStream(CanvasStream):
 
 
 class EnrollmentsStream(CanvasStream):
-    records_jsonpath = "$.[*]"
-
     name = "enrollments"
     parent_stream_type = CourseStream
-
     path = "/courses/{course_id}/enrollments"
     primary_keys = ["id"]
     replication_key = None
+    records_jsonpath = "$.[*]"
 
     schema = th.PropertiesList(
-        th.Property("course_id", IntegerTypeCustom, description="Placehold"),
-        th.Property("id", IntegerTypeCustom, description="Placehold"),
-        th.Property("user_id", th.IntegerType, description="Placehold"),
-        th.Property("course_section_id", IntegerTypeCustom, description="Placehold"),
-        th.Property("root_account_id", IntegerTypeCustom, description="Placehold"),
-        th.Property("type", th.StringType, description="Placehold"),
-        th.Property("created_at", th.DateTimeType, description="Placehold"),
-        th.Property("updated_at", th.DateTimeType, description="Placehold"),
-        th.Property("start_at", th.DateTimeType, description="Placehold"),
-        th.Property("end_at", th.DateTimeType, description="Placehold"),
-        th.Property("enrollment_state", th.StringType, description="Placehold"),
-        th.Property("role", th.StringType, description="Placehold"),
-        th.Property("role_id", IntegerTypeCustom, description="Placehold"),
-        th.Property("last_activity_at", th.DateTimeType, description="Placehold"),
-        th.Property("total_activity_time", IntegerTypeCustom, description="Placehold"),
-        th.Property("sis_import_id", IntegerTypeCustom, description="Placehold"),
-        th.Property("sis_account_id", th.StringType, description="Placehold"),
-        th.Property("sis_course_id", th.StringType, description="Placehold"),
-        th.Property("sis_section_id", th.StringType, description="Placehold"),
-        th.Property("sis_user_id", th.StringType, description="Placehold"),
-        th.Property("html_url", th.StringType, description="Placehold"),
+        th.Property("course_id", IntegerTypeCustom),
+        th.Property("id", IntegerTypeCustom),
+        th.Property("user_id", th.IntegerType),
+        th.Property("course_section_id", IntegerTypeCustom),
+        th.Property("root_account_id", IntegerTypeCustom),
+        th.Property("type", th.StringType),
+        th.Property("created_at", th.DateTimeType),
+        th.Property("updated_at", th.DateTimeType),
+        th.Property("start_at", th.DateTimeType),
+        th.Property("end_at", th.DateTimeType),
+        th.Property("enrollment_state", th.StringType),
+        th.Property("role", th.StringType),
+        th.Property("role_id", IntegerTypeCustom),
+        th.Property("last_activity_at", th.DateTimeType),
+        th.Property("total_activity_time", IntegerTypeCustom),
+        th.Property("sis_import_id", IntegerTypeCustom),
+        th.Property("sis_account_id", th.StringType),
+        th.Property("sis_course_id", th.StringType),
+        th.Property("sis_section_id", th.StringType),
+        th.Property("sis_user_id", th.StringType),
+        th.Property("html_url", th.StringType),
     ).to_dict()
 
 
@@ -272,7 +270,7 @@ class AssignmentsStream(CanvasStream):
         th.Property("updated_at", th.DateTimeType),
         th.Property("course_id", IntegerTypeCustom),
         th.Property("name", th.StringType),
-        th.Property("rubric", th.ObjectType(additional_properties=True)),
+        th.Property("rubric", th.ObjectType()),
         th.Property("published", th.BooleanType)
     ).to_dict()
 

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from singer_sdk import Tap, Stream
+from singer_sdk import Tap, Stream, Capabilities
 from singer_sdk import typing as th  # JSON schema typing helpers
 
 from tap_canvas.streams import (
@@ -38,6 +38,12 @@ class TapCanvas(Tap):
 
     __version__ = __version__
 
+    capabilities = [
+        Capabilities.DISCOVER,
+        Capabilities.CATALOG,
+        Capabilities.STATE,
+        Capabilities.STREAM_MAPS,  
+    ]
 
     config_jsonschema = th.PropertiesList(
         th.Property(

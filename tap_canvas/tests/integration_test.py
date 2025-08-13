@@ -115,7 +115,12 @@ def test_enrollments_includes_grades_object(config):
 
     assert "grades" in props, "Expected 'grades' object in enrollments schema"
     grades = props["grades"]
-    assert grades["type"] == "object", "'grades' should be an object"
+
+    grades_type = grades.get("type")
+    if isinstance(grades_type, list):
+        assert "object" in grades_type, "'grades' should include 'object' in its type list"
+    else:
+        assert grades_type == "object", "'grades' should be an object"
 
     grade_props = grades["properties"]
     for k in ["current_score", "current_grade", "final_score", "final_grade"]:

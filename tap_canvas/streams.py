@@ -203,7 +203,6 @@ class EnrollmentsStream(CanvasStream):
                 th.Property("final_score", th.NumberType),
                 th.Property("final_grade", th.StringType),
             ),
-            required=True,
         ),
     ).to_dict()
 

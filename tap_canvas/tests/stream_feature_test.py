@@ -206,3 +206,38 @@ class TestStreamFeatures:
             except Exception as e:
                 error_msg = str(e).lower()
                 assert any(word in error_msg for word in ['not found', 'invalid', 'error', 'unauthorized'])
+
+    def test_submissions_stream_is_discovered(self, streams):
+        assert "submissions" in streams, (
+            "Expected 'submissions' stream to be discoverable. "
+            "Add a SubmissionsStream to STREAM_TYPES."
+        )
+
+    def test_submissions_stream_parent_and_path(self, streams, sample_course_context):
+        if "submissions" not in streams:
+            pytest.skip("Submissions stream not available yet")
+
+        from tap_canvas.streams import CourseStream
+        submissions = streams["submissions"]
+
+        assert getattr(submissions, "parent_stream_type", None) is CourseStream
+
+        ctx = sample_course_context or {"course_id": 123}
+
+        url = submissions.get_url(ctx)
+        assert url.startswith("http")
+        assert "/api/v1" in url
+        if ctx.get("course_id") == 123:
+            assert "/courses/123/students/submissions" in url
+
+    def test_submissions_stream_schema_minimal_fields(self, streams):
+        if "submissions" not in streams:
+            pytest.skip("Submissions stream not available yet")
+
+        submissions = streams["submissions"]
+        props = submissions.schema["properties"]
+
+        for key in ["id", "assignment_id", "user_id", "score", "grade", "submitted_at", "workflow_state"]:
+            assert key in props, f"Missing expected submissions field: {key}"
+
+        assert "id" in submissions.primary_keys

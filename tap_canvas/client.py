@@ -104,11 +104,6 @@ class CanvasStream(RESTStream):
         if self.replication_key:
             params["sort"] = "asc"
             params["order_by"] = self.replication_key
-        
-        # Add updated_since for incremental streams
-        if context and self.replication_key == "updated_at":
-            if start := context.get("start_date") or self.config.get("start_date"):
-                params["updated_since"] = start
 
         # Add include fields from config
         include_fields = self.config.get("include")

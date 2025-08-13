@@ -43,24 +43,6 @@ def test_capabilities():
     found_caps = [cap for cap in expected_caps if cap in capability_strings]
     assert len(found_caps) > 0, f"Should have at least some expected capabilities. Found: {capability_strings}"
 
-def test_get_url_params_includes_updated_since():
-    """Test that updated_since is added to incremental stream parameters."""
-    config = {
-        "api_key": "test_key",
-        "base_url": "https://canvas.test/api/v1",
-        "account_id": "456"
-    }
-
-    tap = TapCanvas(config=config, parse_env_config=False)
-    stream = CourseStream(tap=tap)
-    stream.replication_key = "updated_at"  # force-enable incremental mode
-
-    context = {"start_date": "2023-01-01T00:00:00Z"}
-    params = stream.get_url_params(context=context, next_page_token=None)
-
-    assert "updated_since" in params, "Expected 'updated_since' to be in URL params"
-    assert params["updated_since"] == "2023-01-01T00:00:00Z", "Unexpected value for 'updated_since'"
-
 def test_get_url_params_includes_include_list():
     """Test that 'include' is added to URL params if present in config."""
     config = {

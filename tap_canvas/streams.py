@@ -1,10 +1,8 @@
-# with changes
 """Stream type classes for tap-canvas."""
 
 from pathlib import Path
 from typing import Any, Dict, Optional, Union, List, Iterable
-
-from singer_sdk import typing as th  # JSON Schema typing helpers
+from singer_sdk import typing as th
 
 from tap_canvas.client import CanvasStream
 from tap_canvas.typing import IntegerTypeCustom
@@ -24,8 +22,7 @@ class EnrollmentTermStream(CanvasStream):
         th.Property("end_at", th.DateTimeType, description="Placeholder"),
         th.Property("created_at", th.DateTimeType, description="Placeholder"),
         th.Property("workflow_state", th.StringType, description="Placeholder"),
-        th.Property("grading_period_group_id", IntegerTypeCustom,
-                    description="Placeholder"),
+        th.Property("grading_period_group_id", IntegerTypeCustom, description="Placeholder"),
         th.Property("sis_term_id", th.StringType, description="Placeholder"),
         th.Property("sis_import_id", th.StringType, description="Placeholder"),
     ).to_dict()
@@ -75,15 +72,12 @@ class CourseStream(CanvasStream):
 
         params["per_page"] = 100
 
-        # No updated_since since this stream is not incremental
-
         if "course_ends_after" in self.config:
             params["ends_after"] = self.config.get("course_ends_after")
 
         if "with_enrollments" in self.config:
             params["with_enrollments"] = self.config.get("with_enrollments")
 
-        # Optional: include additional fields
         include_fields = self.config.get("include")
         if include_fields:
             params["include"] = include_fields
@@ -148,9 +142,7 @@ class OutcomeResultStream(CanvasStream):
         alignments = response_json["linked"]["alignments"]
 
         for outcome_result in outcome_results:
-            # Add user id
             outcome_result["user_id"] = outcome_result["links"]["user"]
-            # Add outcome metadata to outcome_result
             # TODO: add a config option
             outcome_result_outcome_id = int(outcome_result["links"]["learning_outcome"])
             try:
@@ -161,7 +153,6 @@ class OutcomeResultStream(CanvasStream):
             outcome_result["outcome_title"] = current_outcome["title"]
             outcome_result["outcome_display_name"] = current_outcome["display_name"]
 
-            # Add alignment metadata to outcome_result
             try:
                 outcome_result_alignment_id = outcome_result["links"]["alignment"]
             except StopIteration as e:
@@ -172,7 +163,6 @@ class OutcomeResultStream(CanvasStream):
             outcome_result["alignment_url"] = current_alignment["html_url"]
 
             yield outcome_result
-
 
 class EnrollmentsStream(CanvasStream):
     name = "enrollments"
@@ -204,6 +194,17 @@ class EnrollmentsStream(CanvasStream):
         th.Property("sis_section_id", th.StringType),
         th.Property("sis_user_id", th.StringType),
         th.Property("html_url", th.StringType),
+
+        th.Property(
+            "grades",
+            th.ObjectType(
+                th.Property("current_score", th.NumberType),
+                th.Property("current_grade", th.StringType),
+                th.Property("final_score", th.NumberType),
+                th.Property("final_grade", th.StringType),
+            ),
+            required=True,
+        ),
     ).to_dict()
 
 
@@ -229,7 +230,6 @@ class SectionsStream(CanvasStream):
         th.Property("sis_course_id", th.StringType),
         th.Property("sis_import_id", IntegerTypeCustom),
     ).to_dict()
-
 
 class UsersStream(CanvasStream):
     records_jsonpath = "$.[*]"
@@ -277,7 +277,22 @@ class AssignmentsStream(CanvasStream):
         th.Property("published", th.BooleanType)
     ).to_dict()
 
-class OutcomeStream(CanvasStream):
-    records_jsonpath = "$[*]"
 
-    name = "outcomes"
+class SubmissionsStream(CanvasStream):
+    """Student submissions for a course."""
+    records_jsonpath = "$.[*]"
+    name = "submissions"
+    parent_stream_type = CourseStream
+    path = "/courses/{course_id}/students/submissions"
+    primary_keys = ["id"]
+    replication_key = None
+
+    schema = th.PropertiesList(
+        th.Property("id", IntegerTypeCustom),
+        th.Property("assignment_id", IntegerTypeCustom),
+        th.Property("user_id", IntegerTypeCustom),
+        th.Property("score", th.NumberType),
+        th.Property("grade", th.StringType),
+        th.Property("submitted_at", th.DateTimeType),
+        th.Property("workflow_state", th.StringType),
+    ).to_dict()

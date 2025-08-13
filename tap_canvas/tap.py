@@ -3,7 +3,8 @@
 from typing import List
 
 from singer_sdk import Tap, Stream
-from singer_sdk import typing as th  # JSON schema typing helpers
+from singer_sdk import typing as th
+from tap_canvas import __version__
 
 from tap_canvas.streams import (
     EnrollmentTermStream,
@@ -13,10 +14,9 @@ from tap_canvas.streams import (
     UsersStream,
     SectionsStream,
     AssignmentsStream,
+    SubmissionsStream
 )
 
-# Import version from __init__.py
-from tap_canvas import __version__
 
 STREAM_TYPES = [
     EnrollmentTermStream,
@@ -26,6 +26,7 @@ STREAM_TYPES = [
     UsersStream,
     SectionsStream,
     AssignmentsStream,
+    SubmissionsStream 
 ]
 
 
@@ -37,11 +38,6 @@ class TapCanvas(Tap):
     disable_default_logging_config_file = True
 
     __version__ = __version__
-
-    capabilities = [
-        "catalog",
-        "discover" 
-    ]
 
     config_jsonschema = th.PropertiesList(
         th.Property(

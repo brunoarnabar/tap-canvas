@@ -4,7 +4,6 @@ import os
 import pytest
 from tap_canvas.tap import TapCanvas
 
-
 def get_config_from_env():
     """Get configuration from environment variables."""
     return {
@@ -103,3 +102,59 @@ def test_include_fields_affect_response(config):
     assert len(enriched_keys) > 0, "Include fields should add extra fields to the response"
 
     print(f"Include test passed: Got enriched keys {enriched_keys}")
+
+def test_enrollments_includes_grades_object(config):
+    local_config = config.copy()
+
+    tap = TapCanvas(config=local_config)
+    streams = {s.name: s for s in tap.discover_streams()}
+    assert "enrollments" in streams, "Enrollments stream must be discoverable"
+
+    enrollments = streams["enrollments"]
+    props = enrollments.schema["properties"]
+
+    assert "grades" in props, "Expected 'grades' object in enrollments schema"
+    grades = props["grades"]
+    assert grades["type"] == "object", "'grades' should be an object"
+
+    grade_props = grades["properties"]
+    for k in ["current_score", "current_grade", "final_score", "final_grade"]:
+        assert k in grade_props, f"Missing '{k}' in grades object"
+
+def test_enrollments_grades_has_data(config):
+    """Verify that at least one enrollment record contains non empty grades data."""
+    local_config = config.copy()
+    local_config["record_limit"] = 5
+
+    tap = TapCanvas(config=local_config)
+    streams = {s.name: s for s in tap.discover_streams()}
+
+    courses_stream = streams.get("courses")
+    enrollments_stream = streams.get("enrollments")
+    if not courses_stream or not enrollments_stream:
+        pytest.skip("Required streams not available")
+
+    found_with_grades = False
+    checked_courses = 0
+    max_courses_to_check = 5
+
+    for course in courses_stream.get_records(context=None):
+        ctx = courses_stream.get_child_context(course, None) or {}
+        if "course_id" not in ctx:
+            continue
+
+        try:
+            for enr in enrollments_stream.get_records(context=ctx):
+                grades = enr.get("grades")
+                if isinstance(grades, dict) and any(v is not None for v in grades.values()):
+                    found_with_grades = True
+                    break
+        except Exception:
+            pass
+
+        checked_courses += 1
+        if found_with_grades or checked_courses >= max_courses_to_check:
+            break
+
+    assert found_with_grades, "No enrollment records contained non empty grades data in sampled courses"
+

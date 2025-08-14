@@ -5,7 +5,6 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 from singer_sdk import typing as th
 
 from tap_canvas.client import CanvasStream
-from tap_canvas.typing import IdType
 import requests
 
 IdType = th.StringType

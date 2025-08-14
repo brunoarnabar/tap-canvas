@@ -15,8 +15,6 @@ class IntegerTypeCustom(th.JSONTypeHelper):
         """
         dict = {
             "type": ["integer"],
-            "minimum": -2147483648,
-            "maximum": 2147483647,
         }
 
         return dict

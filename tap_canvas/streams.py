@@ -206,6 +206,16 @@ class EnrollmentsStream(CanvasStream):
         ),
     ).to_dict()
 
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        params: dict = {}
+        if next_page_token:
+            params["page"] = next_page_token
+        params["per_page"] = 100
+        params["include[]"] = ["grades"]
+        return params
+
 
 class SectionsStream(CanvasStream):
     records_jsonpath = "$.[*]"
